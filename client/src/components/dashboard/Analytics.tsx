@@ -7,19 +7,15 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import { format, subDays } from 'date-fns';
 import useSensorData from '../../hooks/useSensorData';
 import ApiService from '../../services/api';
 
-const Analytics: React.FC = () => {
+const Analytics = () => {
   const [period, setPeriod] = useState<'24h' | '7d' | '30d'>('7d');
   const [selectedMachine, setSelectedMachine] = useState('');
   const [analyticsData, setAnalyticsData] = useState<any[]>([]);
@@ -94,11 +90,11 @@ const Analytics: React.FC = () => {
     // Calculate averages
     return Object.values(grouped).map((group: any) => ({
       time: group.time,
-      temperature: group.temperature.reduce((a: number, b: number) => a + b, 0) / group.temperature.length,
-      voltage: group.voltage.reduce((a: number, b: number) => a + b, 0) / group.voltage.length,
-      motorSpeed: group.motorSpeed.reduce((a: number, b: number) => a + b, 0) / group.motorSpeed.length,
-      heat: group.heat.reduce((a: number, b: number) => a + b, 0) / group.heat.length,
-      uptime: (group.workingStatus.reduce((a: number, b: number) => a + b, 0) / group.workingStatus.length) * 100,
+      temperature: group.temperature.length > 0 ? group.temperature.reduce((a: number, b: number) => a + b, 0) / group.temperature.length : 0,
+      voltage: group.voltage.length > 0 ? group.voltage.reduce((a: number, b: number) => a + b, 0) / group.voltage.length : 0,
+      motorSpeed: group.motorSpeed.length > 0 ? group.motorSpeed.reduce((a: number, b: number) => a + b, 0) / group.motorSpeed.length : 0,
+      heat: group.heat.length > 0 ? group.heat.reduce((a: number, b: number) => a + b, 0) / group.heat.length : 0,
+      uptime: group.workingStatus.length > 0 ? (group.workingStatus.reduce((a: number, b: number) => a + b, 0) / group.workingStatus.length) * 100 : 0,
     }));
   };
 
@@ -113,7 +109,6 @@ const Analytics: React.FC = () => {
     voltage: data.voltage,
   }));
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   if (loading) {
     return (
@@ -265,11 +260,11 @@ const Analytics: React.FC = () => {
                 />
                 <YAxis />
                 <Tooltip
-                  formatter={(value: number) => [`${value.toFixed(1)}V`, 'Voltage']}
+                  formatter={(value: number) => [`${value.toFixed(1)}°C`, 'Temperature']}
                 />
                 <Line
                   type="monotone"
-                  dataKey="voltage"
+                  dataKey="temperature"
                   stroke="#10b981"
                   strokeWidth={2}
                   dot={false}
