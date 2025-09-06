@@ -8,7 +8,7 @@ import {
   ExclamationTriangleIcon,
   CogIcon,
   UsersIcon,
-  CircuitBoardIcon,
+  CpuChipIcon,
 } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 
@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
     {
       name: 'Sensor Data',
       href: '/sensors',
-      icon: CircuitBoardIcon,
+      icon: CpuChipIcon,
       current: location.pathname.startsWith('/sensors'),
     },
     {

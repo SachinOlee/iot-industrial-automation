@@ -7,11 +7,12 @@ const connectDB = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        
+
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error('Database connection error:', error.message);
-        process.exit(1);
+        console.log('Server will continue without database connection. Some features may not work.');
+        // Don't exit the process, let the server start
     }
 };
 

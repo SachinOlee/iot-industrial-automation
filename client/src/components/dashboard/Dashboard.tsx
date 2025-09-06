@@ -18,7 +18,7 @@ import useSensorData from '../../hooks/useSensorData';
 import { useAuth } from '../../hooks/useAuth';
 import {
   ExclamationTriangleIcon,
-  CircuitBoardIcon,
+  CpuChipIcon,
   ChartBarIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
       name: 'Active Machines',
       value: latestData.filter((data) => data.workingStatus).length,
       total: latestData.length,
-      icon: CircuitBoardIcon,
+      icon: CpuChipIcon,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
     },

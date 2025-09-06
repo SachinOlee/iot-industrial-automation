@@ -50,11 +50,13 @@ const { apiLimiter } = require('./middleware/rateLimit');
 const auth = require('./routes/auth');
 const sensor = require('./routes/sensor');
 const admin = require('./routes/admin');
+const maintenance = require('./routes/maintenance');
 
 // Mount routers
 app.use('/api/auth', auth);
 app.use('/api/sensor', sensor);
 app.use('/api/admin', admin);
+app.use('/api/maintenance', maintenance);
 
 // Socket.io connection handling
 const { protect } = require('./middleware/auth');
