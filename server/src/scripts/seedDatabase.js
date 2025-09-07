@@ -177,15 +177,15 @@ const seedDatabase = async () => {
         // Display comprehensive summary
         const userCount = await User.countDocuments();
         const sensorCount = await SensorData.countDocuments();
-        const alertCount = await MaintenanceAlert.countDocuments();
+        const totalAlertCount = await MaintenanceAlert.countDocuments();
         const activeAlerts = await MaintenanceAlert.countDocuments({ isResolved: false });
 
         console.log('\n📊 Database Summary:');
         console.log(`   👥 Users: ${userCount}`);
         console.log(`   📈 Sensor Data Points: ${sensorCount}`);
-        console.log(`   🚨 Total Alerts: ${alertCount}`);
+        console.log(`   🚨 Total Alerts: ${totalAlertCount}`);
         console.log(`   ⚠️  Active Alerts: ${activeAlerts}`);
-        console.log(`   ✅ Resolved Alerts: ${alertCount - activeAlerts}`);
+        console.log(`   ✅ Resolved Alerts: ${totalAlertCount - activeAlerts}`);
 
         console.log('\n🔑 Login Credentials:');
         console.log('   👨‍💼 Admin: admin@iot.com / Admin@123456');

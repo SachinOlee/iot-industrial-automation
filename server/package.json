@@ -6,10 +6,20 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest",
+    "seed": "node src/scripts/seedDatabase.js",
+    "check-db": "node src/scripts/checkConnection.js",
+    "db:seed": "npm run seed",
+    "db:check": "npm run check-db",
+    "db:test": "npm run check-db",
     "db:indexes": "node src/scripts/createIndexes.js",
-    "db:seed": "node src/scripts/seedData.js"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
   },
+  "keywords": ["iot", "automation", "industrial", "api", "nodejs"],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -22,11 +32,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.8.7",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.9.0",
+    "nodemailer": "^6.9.1",
     "socket.io": "^4.6.0"
   },
   "devDependencies": {
     "jest": "^29.5.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "eslint": "^8.36.0"
   }
 }
