@@ -12,7 +12,12 @@ import {
 } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -59,8 +64,27 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 pt-16">
-      <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      <div className={classNames(
+        "flex-col fixed inset-y-0 pt-16 transition-all duration-300 ease-in-out z-50",
+        "bg-white border-r border-gray-200 overflow-y-auto",
+        // Mobile styles
+        "w-64",
+        // Mobile visibility
+        isOpen ? "translate-x-0" : "-translate-x-full",
+        // Desktop styles
+        "hidden md:flex",
+        isOpen ? "md:translate-x-0 md:w-64" : "md:-translate-x-full md:w-0"
+      )}>
+      <div className="flex flex-col flex-grow pt-5 pb-4">
         <div className="flex items-center flex-shrink-0 px-4">
           <h2 className="text-lg font-medium text-gray-900">Navigation</h2>
         </div>
@@ -128,6 +152,7 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -30,61 +30,83 @@ const register = async (req, res) => {
             });
         }
 
+        // Check if email verification should be skipped (development mode)
+        const skipEmailVerification = process.env.SKIP_EMAIL_VERIFICATION === 'true';
+
         // Create user
         const user = await User.create({
             firstName,
             lastName,
             email,
-            password
+            password,
+            isEmailVerified: skipEmailVerification // Auto-verify if skipping email
         });
 
-        // Generate email verification token
-        const verificationToken = user.getEmailVerificationToken();
-        await user.save({ validateBeforeSave: false });
-
-        // Create verification URL
-        const verificationUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
-
-        // Send verification email
-        const message = `
-            <h1>Welcome to IoT Industrial Automation!</h1>
-            <p>Hello ${firstName},</p>
-            <p>Thank you for registering. Please verify your email by clicking the link below:</p>
-            <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
-            <p>If the button doesn't work, copy and paste this link: ${verificationUrl}</p>
-            <p>This link will expire in 24 hours.</p>
-        `;
-
-        try {
-            await sendEmail({
-                to: user.email,
-                subject: 'Email Verification - IoT Industrial Automation',
-                html: message
-            });
-
+        if (skipEmailVerification) {
+            // Skip email verification - user is automatically verified
             res.status(201).json({
                 success: true,
-                message: 'User registered successfully. Please check your email to verify your account.',
+                message: 'User registered successfully. Email verification skipped for development.',
                 data: {
                     user: {
                         id: user._id,
                         firstName: user.firstName,
                         lastName: user.lastName,
                         email: user.email,
-                        role: user.role
+                        role: user.role,
+                        isEmailVerified: true
                     }
                 }
             });
-        } catch (error) {
-            console.error('Email sending failed:', error);
-            
-            // If email fails, delete user
-            await User.findByIdAndDelete(user._id);
-            
-            return res.status(500).json({
-                success: false,
-                message: 'User registration failed. Could not send verification email.'
-            });
+        } else {
+            // Generate email verification token
+            const verificationToken = user.getEmailVerificationToken();
+            await user.save({ validateBeforeSave: false });
+
+            // Create verification URL
+            const verificationUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
+
+            // Send verification email
+            const message = `
+                <h1>Welcome to IoT Industrial Automation!</h1>
+                <p>Hello ${firstName},</p>
+                <p>Thank you for registering. Please verify your email by clicking the link below:</p>
+                <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
+                <p>If the button doesn't work, copy and paste this link: ${verificationUrl}</p>
+                <p>This link will expire in 24 hours.</p>
+            `;
+
+            try {
+                await sendEmail({
+                    to: user.email,
+                    subject: 'Email Verification - IoT Industrial Automation',
+                    html: message
+                });
+
+                res.status(201).json({
+                    success: true,
+                    message: 'User registered successfully. Please check your email to verify your account.',
+                    data: {
+                        user: {
+                            id: user._id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            email: user.email,
+                            role: user.role
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Email sending failed:', error);
+
+                // If email fails, delete user
+                await User.findByIdAndDelete(user._id);
+
+                return res.status(500).json({
+                    success: false,
+                    message: 'User registration failed. Could not send verification email.'
+                });
+            }
         }
 
     } catch (error) {

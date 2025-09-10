@@ -3,14 +3,21 @@ import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Transition } from '@headlessui/react';
 import { useAuth } from '../../hooks/useAuth';
-import { 
-  BellIcon, 
-  UserCircleIcon, 
+import {
+  BellIcon,
+  UserCircleIcon,
   ChevronDownIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+  sidebarOpen: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar, sidebarOpen }) => {
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
@@ -22,6 +29,28 @@ const Header: React.FC = () => {
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
+            {/* Sidebar Toggle Button */}
+            <button
+              onClick={onToggleSidebar}
+              className="mr-4 p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-md md:hidden"
+              aria-label="Toggle sidebar"
+            >
+              {sidebarOpen ? (
+                <XMarkIcon className="h-6 w-6" />
+              ) : (
+                <Bars3Icon className="h-6 w-6" />
+              )}
+            </button>
+
+            {/* Desktop Sidebar Toggle */}
+            <button
+              onClick={onToggleSidebar}
+              className="mr-4 p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-md hidden md:block"
+              aria-label="Toggle sidebar"
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+
             <Link to="/dashboard" className="flex items-center">
               <h1 className="text-xl font-bold text-gray-900">
                 IoT Industrial Automation

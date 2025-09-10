@@ -147,7 +147,7 @@ const seedDatabase = async () => {
                 {
                     userId: sampleUser._id,
                     machineId: 'MACHINE-003',
-                    alertType: 'motor_speed',
+                    alertType: 'vibration',
                     severity: 'low',
                     message: 'Motor speed fluctuation detected - Monitor closely',
                     confidence: 0.65,
@@ -157,7 +157,7 @@ const seedDatabase = async () => {
                 {
                     userId: sampleUser._id,
                     machineId: 'MACHINE-004',
-                    alertType: 'voltage',
+                    alertType: 'failure_prediction',
                     severity: 'high',
                     message: 'Voltage spike detected: 285V - Power system check required',
                     confidence: 0.88,

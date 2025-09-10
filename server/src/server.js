@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 // Load env vars
 dotenv.config();
 
-const connectDB = require('./config/database');
+const { connectDB } = require('./config/database');
 const User = require('./models/User');
 
 // Connect to database

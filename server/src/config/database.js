@@ -9,7 +9,7 @@ const connectDB = async () => {
             useUnifiedTopology: true,
             serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
-            bufferMaxEntries: 0,
+            
             maxPoolSize: 10,
             retryWrites: true,
             w: 'majority'

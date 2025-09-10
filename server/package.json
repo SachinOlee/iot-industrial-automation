@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "seed": "node src/scripts/seedDatabase.js",
     "check-db": "node src/scripts/checkConnection.js",
+    "test-email": "node src/scripts/testEmail.js",
     "db:seed": "npm run seed",
     "db:check": "npm run check-db",
     "db:test": "npm run check-db",
