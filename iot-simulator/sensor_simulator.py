@@ -14,8 +14,7 @@ import threading
 import logging
 from datetime import datetime, timedelta
 from config import *
-from mqtt_client import MQTTClient
-from api_client import APIClient
+from mqtt_client import MQTTClient, APIClient
 
 class SensorSimulator:
     def __init__(self):

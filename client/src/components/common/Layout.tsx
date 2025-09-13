@@ -12,11 +12,11 @@ const Layout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <Header onToggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
       <div className="flex">
         <Sidebar isOpen={sidebarOpen} onClose={toggleSidebar} />
-        <main className={`flex-1 p-6 transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}>
+        <main className={`flex-1 p-8 transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}>
           <Outlet />
         </main>
       </div>
