@@ -16,25 +16,13 @@ import ApiService from '../../services/api';
 import toast from 'react-hot-toast';
 
 interface SystemStats {
-  overview: {
-    totalUsers: number;
-    activeUsers: number;
-    totalSensorData: number;
-    totalAlerts: number;
-    unresolvedAlerts: number;
-    systemHealth: 'healthy' | 'warning' | 'critical';
-    uptime: string;
-  };
-  charts: {
-    recentSensorData: any[];
-    alertsBySeverity: any[];
-    userActivityToday: number;
-  };
-  recent: {
-    users: any[];
-    alerts: any[];
-    systemLogs: any[];
-  };
+  totalMachines: number;
+  activeMachines: number;
+  totalAlerts: number;
+  dataPoints: number;
+  diskUsage: number;
+  uptime: string;
+  lastBackup?: Date;
 }
 
 const AdminPanel: React.FC = () => {
@@ -87,7 +75,7 @@ const AdminPanel: React.FC = () => {
       description: 'Manage users, roles, and permissions',
       icon: UsersIcon,
       href: '/admin/users',
-      stat: stats?.overview.totalUsers || 0,
+      stat: stats?.totalMachines || 0,
       statLabel: 'Total Users',
       color: 'bg-blue-500',
       hoverColor: 'hover:bg-blue-600',
@@ -97,7 +85,7 @@ const AdminPanel: React.FC = () => {
       description: 'Monitor and control system settings',
       icon: CogIcon,
       href: '/admin/system',
-      stat: stats?.overview.totalSensorData || 0,
+      stat: stats?.dataPoints || 0,
       statLabel: 'Data Points',
       color: 'bg-green-500',
       hoverColor: 'hover:bg-green-600',
@@ -107,7 +95,7 @@ const AdminPanel: React.FC = () => {
       description: 'View and manage all system alerts',
       icon: ExclamationTriangleIcon,
       href: '/admin/alerts',
-      stat: stats?.overview.unresolvedAlerts || 0,
+      stat: stats?.totalAlerts || 0,
       statLabel: 'Active Alerts',
       color: 'bg-red-500',
       hoverColor: 'hover:bg-red-600',
@@ -117,7 +105,7 @@ const AdminPanel: React.FC = () => {
       description: 'System-wide analytics and reporting',
       icon: ChartBarIcon,
       href: '/analytics',
-      stat: stats?.overview.activeUsers || 0,
+      stat: stats?.activeMachines || 0,
       statLabel: 'Active Users',
       color: 'bg-purple-500',
       hoverColor: 'hover:bg-purple-600',
@@ -166,16 +154,10 @@ const AdminPanel: React.FC = () => {
             </div>
             <div className="flex items-center space-x-3">
               {/* System Health Badge */}
-              {stats?.overview.systemHealth && (
-                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getHealthStatusColor(stats.overview.systemHealth)}`}>
-                  {stats.overview.systemHealth === 'healthy' ? (
-                    <CheckCircleIcon className="w-4 h-4 mr-1" />
-                  ) : (
-                    <XCircleIcon className="w-4 h-4 mr-1" />
-                  )}
-                  System {stats.overview.systemHealth}
-                </div>
-              )}
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getHealthStatusColor('healthy')}`}>
+                <CheckCircleIcon className="w-4 h-4 mr-1" />
+                System healthy
+              </div>
               
               {/* Refresh Button */}
               <button
@@ -190,9 +172,9 @@ const AdminPanel: React.FC = () => {
           </div>
           
           {/* System Uptime */}
-          {stats?.overview.uptime && (
+          {stats?.uptime && (
             <div className="mt-4 text-sm text-gray-600">
-              System uptime: <span className="font-medium">{stats.overview.uptime}</span>
+              System uptime: <span className="font-medium">{stats.uptime}</span>
             </div>
           )}
         </div>
@@ -213,7 +195,7 @@ const AdminPanel: React.FC = () => {
                       Total Users
                     </dt>
                     <dd className="text-lg font-medium text-gray-900">
-                      {stats.overview.totalUsers}
+                      {stats?.totalMachines || 0}
                     </dd>
                   </dl>
                 </div>
@@ -233,7 +215,7 @@ const AdminPanel: React.FC = () => {
                       Active Users
                     </dt>
                     <dd className="text-lg font-medium text-gray-900">
-                      {stats.overview.activeUsers}
+                      {stats?.activeMachines || 0}
                     </dd>
                   </dl>
                 </div>
@@ -253,7 +235,7 @@ const AdminPanel: React.FC = () => {
                       Sensor Data Points
                     </dt>
                     <dd className="text-lg font-medium text-gray-900">
-                      {stats.overview.totalSensorData.toLocaleString()}
+                      {stats?.dataPoints?.toLocaleString() || 0}
                     </dd>
                   </dl>
                 </div>
@@ -273,7 +255,7 @@ const AdminPanel: React.FC = () => {
                       Total Alerts
                     </dt>
                     <dd className="text-lg font-medium text-gray-900">
-                      {stats.overview.totalAlerts}
+                      {stats?.totalAlerts || 0}
                     </dd>
                   </dl>
                 </div>
@@ -293,7 +275,7 @@ const AdminPanel: React.FC = () => {
                       Active Alerts
                     </dt>
                     <dd className="text-lg font-medium text-gray-900">
-                      {stats.overview.unresolvedAlerts}
+                      {stats?.totalAlerts || 0}
                     </dd>
                   </dl>
                 </div>
@@ -343,128 +325,6 @@ const AdminPanel: React.FC = () => {
         ))}
       </div>
 
-      {/* Recent Activity */}
-      {stats && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Users */}
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Recent Users
-                </h3>
-                <Link
-                  to="/admin/users"
-                  className="text-sm text-blue-600 hover:text-blue-500"
-                >
-                  View all
-                </Link>
-              </div>
-              
-              {stats.recent.users && stats.recent.users.length > 0 ? (
-                <ul className="divide-y divide-gray-200">
-                  {stats.recent.users.slice(0, 5).map((user) => (
-                    <li key={user._id} className="py-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-700">
-                              {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {user.firstName} {user.lastName}
-                          </p>
-                          <p className="text-sm text-gray-500 truncate">
-                            {user.email}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            Joined {new Date(user.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              user.role === 'admin'
-                                ? 'bg-purple-100 text-purple-800'
-                                : user.role === 'operator'
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-green-100 text-green-800'
-                            }`}
-                          >
-                            {user.role}
-                          </span>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-center py-6">
-                  <UsersIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-500">No recent users</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Recent Alerts */}
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                  Recent Alerts
-                </h3>
-                <Link
-                  to="/admin/alerts"
-                  className="text-sm text-blue-600 hover:text-blue-500"
-                >
-                  View all
-                </Link>
-              </div>
-              
-              {stats.recent.alerts && stats.recent.alerts.length > 0 ? (
-                <ul className="divide-y divide-gray-200">
-                  {stats.recent.alerts.slice(0, 5).map((alert) => (
-                    <li key={alert._id} className="py-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          <ExclamationTriangleIcon className="h-5 w-5 text-red-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">
-                            {alert.message}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {alert.userId && `${alert.userId.firstName} ${alert.userId.lastName}`} • Machine: {alert.machineId}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(alert.createdAt).toLocaleString()}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSeverityColor(alert.severity)}`}
-                          >
-                            {alert.severity}
-                          </span>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-center py-6">
-                  <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-500">No recent alerts</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Quick Actions */}
       <div className="bg-white shadow sm:rounded-lg">

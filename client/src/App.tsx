@@ -28,6 +28,9 @@ import SystemControl from './components/admin/SystemControl';
 // Profile components
 import ProfileSettings from './components/profile/ProfileSettings';
 
+// Settings components
+import SystemSettings from './components/settings/systemSettings';
+
 // Utils
 import './index.css';
 
@@ -83,6 +86,7 @@ const App: React.FC = () => {
               <Route path="analytics" element={<Analytics />} />
               <Route path="alerts" element={<PredictiveAlerts />} />
               <Route path="profile" element={<ProfileSettings />} />
+              <Route path="settings" element={<SystemSettings />} />
 
               {/* Admin routes */}
               <Route
