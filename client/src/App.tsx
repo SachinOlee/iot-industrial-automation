@@ -25,6 +25,9 @@ import AdminPanel from './components/admin/AdminPanel';
 import UserManagement from './components/admin/UserManagement';
 import SystemControl from './components/admin/SystemControl';
 
+// Profile components
+import ProfileSettings from './components/profile/ProfileSettings';
+
 // Utils
 import './index.css';
 
@@ -79,7 +82,8 @@ const App: React.FC = () => {
               <Route path="sensors" element={<SensorData />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="alerts" element={<PredictiveAlerts />} />
-              
+              <Route path="profile" element={<ProfileSettings />} />
+
               {/* Admin routes */}
               <Route
                 path="admin"
@@ -115,5 +119,6 @@ const App: React.FC = () => {
     </AuthProvider>
   );
 };
+
 
 export default App;

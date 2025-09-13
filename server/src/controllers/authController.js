@@ -516,6 +516,110 @@ const resendEmailVerification = async (req, res) => {
     }
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+const updateProfile = async (req, res) => {
+    try {
+        const { firstName, lastName, email, phone, jobTitle, department, location, bio } = req.body;
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Check if email is being changed and already exists
+        if (email && email !== user.email) {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already exists'
+                });
+            }
+        }
+
+        // Update user fields
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.email = email || user.email;
+        user.phone = phone || user.phone;
+        user.jobTitle = jobTitle || user.jobTitle;
+        user.department = department || user.department;
+        user.location = location || user.location;
+        user.bio = bio || user.bio;
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            data: {
+                user: {
+                    id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    phone: user.phone,
+                    jobTitle: user.jobTitle,
+                    department: user.department,
+                    location: user.location,
+                    bio: user.bio
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+};
+
+// @desc    Upload user avatar
+// @route   POST /api/auth/upload-avatar
+// @access  Private
+const uploadAvatar = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update user profile image path
+        user.profileImage = `/uploads/avatars/${req.file.filename}`;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Profile image uploaded successfully',
+            data: {
+                profileImage: user.profileImage
+            }
+        });
+    } catch (error) {
+        console.error('Upload avatar error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+};
+
 // Helper function to get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
     // Create token
@@ -561,5 +665,7 @@ module.exports = {
     resetPassword,
     updatePassword,
     logout,
-    resendEmailVerification
+    resendEmailVerification,
+    updateProfile,
+    uploadAvatar
 };

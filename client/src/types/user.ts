@@ -9,6 +9,20 @@ export interface User {
   lastLogin?: Date;
   createdAt: Date;
   isActive?: boolean;
+
+  // Extended profile fields
+  profileImage?: string;
+  phone?: string;
+  jobTitle?: string;
+  department?: string;
+  location?: string;
+  bio?: string;
+  preferences?: {
+    language: string;
+    timezone: string;
+    theme: 'light' | 'dark' | 'auto';
+    temperatureUnit: 'celsius' | 'fahrenheit';
+  };
 }
 
 export interface AuthResponse {
