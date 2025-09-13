@@ -56,6 +56,8 @@ app.use('/api/users', require('./routes/user'));
 app.use('/api/sensor', require('./routes/sensor'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/maintenance', require('./routes/maintenance'));
+app.use('/api/machines', require('./routes/machine'));
+app.use('/api/system', require('./routes/system'));
 
 // Socket authentication middleware
 const socketAuth = async (socket, next) => {

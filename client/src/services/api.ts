@@ -180,7 +180,7 @@ class ApiService {
     return response.data;
   }
 
-  async getSystemStats() {
+  async getAdminSystemStats() {
     const response = await this.api.get('/admin/stats');
     return response.data;
   }
@@ -203,6 +203,156 @@ class ApiService {
     resolved?: boolean;
   }) {
     const response = await this.api.get('/admin/alerts', { params });
+    return response.data;
+  }
+
+  // Machine management endpoints
+  async getMachines(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    type?: string;
+    search?: string;
+  }) {
+    const response = await this.api.get('/machines', { params });
+    return response.data;
+  }
+
+  async getMachine(machineId: string) {
+    const response = await this.api.get(`/machines/${machineId}`);
+    return response.data;
+  }
+
+  async createMachine(data: {
+    machineId: string;
+    name: string;
+    location: string;
+    type: string;
+    description?: string;
+    ipAddress?: string;
+    firmwareVersion?: string;
+  }) {
+    const response = await this.api.post('/machines', data);
+    return response.data;
+  }
+
+  async updateMachine(machineId: string, data: {
+    machineId?: string;
+    name?: string;
+    location?: string;
+    type?: string;
+    status?: string;
+    description?: string;
+    ipAddress?: string;
+    firmwareVersion?: string;
+    lastMaintenance?: Date;
+    nextMaintenance?: Date;
+  }) {
+    const response = await this.api.put(`/machines/${machineId}`, data);
+    return response.data;
+  }
+
+  async deleteMachine(machineId: string) {
+    const response = await this.api.delete(`/machines/${machineId}`);
+    return response.data;
+  }
+
+  async getMachineStats() {
+    const response = await this.api.get('/machines/stats/overview');
+    return response.data;
+  }
+
+  async updateMachineThresholds(machineId: string, thresholds: any) {
+    const response = await this.api.put(`/machines/${machineId}/thresholds`, { thresholds });
+    return response.data;
+  }
+
+  async getMaintenanceDue(days?: number) {
+    const response = await this.api.get('/machines/maintenance/due', { params: { days } });
+    return response.data;
+  }
+
+  // System settings endpoints
+  async getSystemSettings() {
+    const response = await this.api.get('/system/settings');
+    return response.data;
+  }
+
+  async updateSystemSettings(settings: any) {
+    const response = await this.api.put('/system/settings', settings);
+    return response.data;
+  }
+
+  async updateDataRetention(settings: { sensorData: number; alerts: number; logs: number }) {
+    const response = await this.api.put('/system/settings/data-retention', settings);
+    return response.data;
+  }
+
+  async updateBackupSettings(settings: {
+    autoBackup?: boolean;
+    backupFrequency?: string;
+    backupTime?: string;
+    backupRetention?: number;
+  }) {
+    const response = await this.api.put('/system/settings/backup', settings);
+    return response.data;
+  }
+
+  async updateAlertSettings(settings: {
+    globalDelay?: number;
+    maxConcurrentAlerts?: number;
+    enabledTypes?: any;
+    escalation?: any;
+  }) {
+    const response = await this.api.put('/system/settings/alerts', settings);
+    return response.data;
+  }
+
+  async updateEmailSettings(settings: any) {
+    const response = await this.api.put('/system/settings/email', settings);
+    return response.data;
+  }
+
+  async testEmailSettings(testEmail: string) {
+    const response = await this.api.post('/system/settings/email/test', { testEmail });
+    return response.data;
+  }
+
+  async updateMaintenanceSettings(settings: {
+    window?: any;
+    autoMaintenance?: boolean;
+  }) {
+    const response = await this.api.put('/system/settings/maintenance', settings);
+    return response.data;
+  }
+
+  async getSystemStats() {
+    const response = await this.api.get('/system/stats');
+    return response.data;
+  }
+
+  async getSystemHealth() {
+    const response = await this.api.get('/system/health');
+    return response.data;
+  }
+
+  async createBackup() {
+    const response = await this.api.post('/system/backup');
+    return response.data;
+  }
+
+  async getBackups() {
+    const response = await this.api.get('/system/backups');
+    return response.data;
+  }
+
+  async clearSystemLogs() {
+    const response = await this.api.post('/system/logs/clear');
+    return response.data;
+  }
+
+  async restartServices() {
+    const response = await this.api.post('/system/services/restart');
     return response.data;
   }
 }
